@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biskvit Shop</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff8f2;
+    color: #30251f;
+}
+
+header {
+    background: #6d3f2b;
+    color: white;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.cart-button {
+    border: 0;
+    background: white;
+    color: #6d3f2b;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hero {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 35px 20px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #725d50;
+}
+
+.categories {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px 25px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.category {
+    border: 1px solid #d9b9a4;
+    background: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.category.active {
+    background: #6d3f2b;
+    color: white;
+}
+
+.products {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px 50px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.product-image {
+    height: 160px;
+    border-radius: 14px;
+    background: #f3dfcf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 70px;
+    margin-bottom: 15px;
+}
+
+.brand {
+    color: #a06c4f;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.card h3 {
+    margin: 5px 0;
+}
+
+.price {
+    font-size: 21px;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.order-button {
+    width: 100%;
+    border: 0;
+    padding: 12px;
+    border-radius: 12px;
+    background: #6d3f2b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.order-button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+.unavailable {
+    color: #a33;
+    font-size: 14px;
+}
+
+footer {
+    background: #3d2a20;
+    color: white;
+    text-align: center;
+    padding: 25px;
+}
+
+/* Кошик */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    background: white;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    padding: 22px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close {
+    border: 0;
+    background: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quantity button {
+    border: 0;
+    background: #ead3c2;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.total {
+    font-size: 21px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 7px 0 14px;
+    font-size: 16px;
+}
+
+.confirm {
+    width: 100%;
+    border: 0;
+    padding: 13px;
+    border-radius: 12px;
+    background: #6d3f2b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Маленька адмін-кнопка */
+.admin-gear {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    background: #6d3f2b;
+    color: white;
+    opacity: 0.35;
+    cursor: pointer;
+    z-index: 50;
+}
+
+.admin-gear:hover {
+    opacity: 1;
+}
+
+.admin-product {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 12px;
+    margin: 10px 0;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.admin-actions button {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .hero h1 {
+        font-size: 32px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="logo">🍪 Biskvit Shop</div>
+        <button class="cart-button" onclick="openCart()">
+            🛒 Кошик (<span id="cartCount">0</span>)
+        </button>
+    </div>
+</header>
+
+<section class="hero">
+    <h1>Смачне печиво поруч 🍪</h1>
+    <p>Обирай улюблені бісквіти та оформлюй замовлення без реєстрації.</p>
+</section>
+
+<div class="categories" id="categories"></div>
+
+<section class="products" id="products"></section>
+
+<footer>
+    <p>Biskvit Shop © 2026</p>
+</footer>
+
+<button class="admin-gear" onclick="openAdminLogin()">⚙</button>
+
+<!-- КОШИК -->
+<div class="modal" id="cartModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>🛒 Ваш кошик</h2>
+            <button class="close" onclick="closeModal('cartModal')">×</button>
+        </div>
+
+        <div id="cartItems"></div>
+
+        <div class="total">
+            Разом: <span id="cartTotal">0</span> грн
+        </div>
+
+        <h3>Оформлення замовлення</h3>
+
+        <label>Ваше ім'я:</label>
+        <input id="customerName" type="text" placeholder="Введіть ім'я">
+
+        <button class="confirm" onclick="createOrder()">
+            Підтвердити замовлення
+        </button>
+    </div>
+</div>
+
+<!-- АДМІН ВХІД -->
+<div class="modal" id="loginModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Адмін-панель</h2>
+            <button class="close" onclick="closeModal('loginModal')">×</button>
+        </div>
+
+        <input id="adminPassword" type="password" placeholder="Пароль">
+
+        <button class="confirm" onclick="loginAdmin()">
+            Увійти
+        </button>
+    </div>
+</div>
+
+<!-- АДМІН ПАНЕЛЬ -->
+<div class="modal" id="adminModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>⚙️ Адмін-панель</h2>
+            <button class="close" onclick="closeModal('adminModal')">×</button>
+        </div>
+
+        <h3>Додати товар</h3>
+
+        <input id="newBrand" placeholder="Бренд">
+        <input id="newName" placeholder="Назва товару">
+        <input id="newPrice" type="number" placeholder="Ціна">
+
+        <select id="newCategory">
+            <option value="Бісквіти">Бісквіти</option>
+            <option value="Напої">Напої</option>
+            <option value="Інше">Інше</option>
+        </select>
+
+        <input id="newEmoji" placeholder="Емодзі товару, наприклад 🍪">
+
+        <button class="confirm" onclick="addProduct()">
+            + Додати товар
+        </button>
+
+        <h3>Товари</h3>
+        <div id="adminProducts"></div>
+
+        <h3>Замовлення</h3>
+        <div id="adminOrders"></div>
+    </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "BiskvitShop_26";
+
+const defaultProducts = [
+    {
+        id: 1,
+        brand: "Roshen",
+        name: "Золотий ключик",
+        price: 20,
+        category: "Бісквіти",
+        emoji: "🍪",
+        available: true
+    },
+    {
+        id: 2,
+        brand: "Roshen",
+        name: "Празький",
+        price: 20,
+        category: "Бісквіти",
+        emoji: "🍫",
+        available: true
+    },
+    {
+        id: 3,
+        brand: "Roshen",
+        name: "П’янка вишня",
+        price: 20,
+        category: "Бісквіти",
+        emoji: "🍒",
+        available: true
+    },
+    {
+        id: 4,
+        brand: "Своя Лінія",
+        name: "Шоколадний",
+        price: 15,
+        category: "Бісквіти",
+        emoji: "🍫",
+        available: true
+    },
+    {
+        id: 5,
+        brand: "Своя Лінія",
+        name: "Молочний",
+        price: 15,
+        category: "Бісквіти",
+        emoji: "🥛",
+        available: true
+    }
+];
+
+let products = JSON.parse(localStorage.getItem("products"));
+
+if (!products) {
+    products = defaultProducts;
+    saveProducts();
+}
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let currentCategory = "Усі";
+
+function saveProducts() {
+    localStorage.setItem("products", JSON.stringify(products));
+}
+
+function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function renderCategories() {
+    const categories = ["Усі"];
+
+    products.forEach(product => {
+        if (!categories.includes(product.category)) {
+            categories.push(product.category);
+        }
+    });
+
+    const container = document.getElementById("categories");
+
+    container.innerHTML = categories.map(category => `
+        <button
+            class="category ${category === currentCategory ? "active" : ""}"
+            onclick="setCategory('${escapeQuotes(category)}')">
+            ${category}
+        </button>
+    `).join("");
+}
+
+function setCategory(category) {
+    currentCategory = category;
+    renderCategories();
+    renderProducts();
+}
+
+function renderProducts() {
+    const container = document.getElementById("products");
+
+    const filtered = currentCategory === "Усі"
+        ? products
+        : products.filter(product => product.category === currentCategory);
+
+    if (filtered.length === 0) {
+        container.innerHTML = "<p>У цій категорії поки немає товарів.</p>";
+        return;
+    }
+
+    container.innerHTML = filtered.map(product => `
+        <div class="card">
+            <div class="product-image">${product.emoji || "🍪"}</div>
+
+            <div class="brand">${product.brand}</div>
+
+            <h3>${product.name}</h3>
+
+            <div class="price">${product.price} грн</div>
+
+            ${
+                product.available
+                ? `<button class="order-button" onclick="addToCart(${product.id})">
+                    Замовити
+                   </button>`
+                : `<div class="unavailable">Немає в наявності</div>`
+            }
+        </div>
+    `).join("");
+}
+
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+
+    if (!product || !product.available) return;
+
+    const existing = cart.find(item => item.id === id);
+
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push({
+            id: id,
+            quantity: 1
+        });
+    }
+
+    saveCart();
+    updateCartCount();
+}
+
+function updateCartCount() {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById("cartCount").textContent = count;
+}
+
+function openCart() {
+    renderCart();
+    document.getElementById("cartModal").classList.add("show");
+}
+
+function renderCart() {
+    const container = document.getElementById("cartItems");
+
+    if (cart.length === 0) {
+        container.innerHTML = "<p>Кошик порожній.</p>";
+        document.getElementById("cartTotal").textContent = "0";
+        return;
+    }
+
+    let total = 0;
+
+    container.innerHTML = cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+
+        if (!product) return "";
+
+        const sum = product.price * item.quantity;
+        total += sum;
+
+        return `
+            <div class="cart-item">
+                <div>
+                    <b>${product.name}</b><br>
+                    ${product.price} грн × ${item.quantity}
+                </div>
+
+                <div class="quantity">
+                    <button onclick="changeQuantity(${product.id}, -1)">−</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="changeQuantity(${product.id}, 1)">+</button>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    document.getElementById("cartTotal").textContent = total;
+}
+
+function changeQuantity(id, change) {
+    const item = cart.find(item => item.id === id);
+
+    if (!item) return;
+
+    item.quantity += change;
+
+    if (item.quantity <= 0) {
+        cart = cart.filter(item => item.id !== id);
+    }
+
+    saveCart();
+    updateCartCount();
+    renderCart();
+}
+
+function createOrder() {
+    if (cart.length === 0) {
+        alert("Кошик порожній.");
+        return;
+    }
+
+    const name = document.getElementById("customerName").value.trim();
+
+    if (!name) {
+        alert("Введіть ваше ім'я.");
+        return;
+    }
+
+    let total = 0;
+
+    const orderItems = cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+
+        if (!product) return null;
+
+        total += product.price * item.quantity;
+
+        return {
+            name: product.name,
+            quantity: item.quantity,
+            price: product.price
+        };
+    }).filter(Boolean);
+
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    orders.push({
+        id: Date.now(),
+        name: name,
+        items: orderItems,
+        total: total,
+        date: new Date().toLocaleString("uk-UA")
+    });
+
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    cart = [];
+    saveCart();
+    updateCartCount();
+
+    document.getElementById("customerName").value = "";
+
+    closeModal("cartModal");
+
+    alert(
+        "Дякуємо, " + name + "!\n\n" +
+        "Ваше замовлення прийнято.\n" +
+        "Сума: " + total + " грн."
+    );
+}
+
+function openAdminLogin() {
+    document.getElementById("adminPassword").value = "";
+    document.getElementById("loginModal").classList.add("show");
+}
+
+function loginAdmin() {
+    const password = document.getElementById("adminPassword").value;
+
+    if (password !== ADMIN_PASSWORD) {
+        alert("Неправильний пароль.");
+        return;
+    }
+
+    closeModal("loginModal");
+    renderAdmin();
+    document.getElementById("adminModal").classList.add("show");
+}
+
+function renderAdmin() {
+    const container = document.getElementById("adminProducts");
+
+    container.innerHTML = products.map(product => `
+        <div class="admin-product">
+            <b>${product.brand} — ${product.name}</b>
+            <br>
+            ${product.price} грн · ${product.category}
+            <br>
+            Статус: ${product.available ? "Є в наявності" : "Немає"}
+
+            <div class="admin-actions">
+                <button onclick="editProduct(${product.id})">
+                    ✏️ Редагувати
+                </button>
+
+                <button onclick="toggleProduct(${product.id})">
+                    ${product.available ? "🚫 Сховати" : "✅ Показати"}
+                </button>
+
+                <button onclick="deleteProduct(${product.id})">
+                    🗑️ Видалити
+                </button>
+            </div>
+        </div>
+    `).join("");
+
+    renderOrders();
+}
+
+function addProduct() {
+    const brand = document.getElementById("newBrand").value.trim();
+    const name = document.getElementById("newName").value.trim();
+    const price = Number(document.getElementById("newPrice").value);
+    const category = document.getElementById("newCategory").value;
+    const emoji = document.getElementById("newEmoji").value.trim() || "🍪";
+
+    if (!brand || !name || !price || price <= 0) {
+        alert("Заповніть бренд, назву та правильну ціну.");
+        return;
+    }
+
+    products.push({
+        id: Date.now(),
+        brand: brand,
+        name: name,
+        price: price,
+        category: category,
+        emoji: emoji,
+        available: true
+    });
+
+    saveProducts();
+
+    document.getElementById("newBrand").value = "";
+    document.getElementById("newName").value = "";
+    document.getElementById("newPrice").value = "";
+    document.getElementById("newEmoji").value = "";
+
+    renderCategories();
+    renderProducts();
+    renderAdmin();
+}
+
+function editProduct(id) {
+    const product = products.find(p => p.id === id);
+
+    if (!product) return;
+
+    const newName = prompt("Нова назва:", product.name);
+
+    if (newName === null) return;
+
+    const newPrice = prompt("Нова ціна:", product.price);
+
+    if (newPrice === null) return;
+
+    product.name = newName.trim() || product.name;
+    product.price = Number(newPrice) > 0 ? Number(newPrice) : product.price;
+
+    saveProducts();
+
+    renderCategories();
+    renderProducts();
+    renderAdmin();
+}
+
+function toggleProduct(id) {
+    const product = products.find(p => p.id === id);
+
+    if (!product) return;
+
+    product.available = !product.available;
+
+    saveProducts();
+
+    renderProducts();
+    renderAdmin();
+}
+
+function deleteProduct(id) {
+    if (!confirm("Видалити цей товар?")) return;
+
+    products = products.filter(product => product.id !== id);
+
+    cart = cart.filter(item =>
+        products.some(product => product.id === item.id)
+    );
+
+    saveProducts();
+    saveCart();
+
+    renderCategories();
+    renderProducts();
+    updateCartCount();
+    renderAdmin();
+}
+
+function renderOrders() {
+    const container = document.getElementById("adminOrders");
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    if (orders.length === 0) {
+        container.innerHTML = "<p>Замовлень поки немає.</p>";
+        return;
+    }
+
+    container.innerHTML = orders.slice().reverse().map(order => `
+        <div class="admin-product">
+            <b>Замовлення №${order.id}</b>
+            <br>
+            Ім'я: ${order.name}
+            <br>
+            Дата: ${order.date}
+            <br><br>
+
+            ${order.items.map(item =>
+                `${item.name} — ${item.quantity} шт. × ${item.price} грн`
+            ).join("<br>")}
+
+            <br><br>
+            <b>Разом: ${order.total} грн</b>
+        </div>
+    `).join("");
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove("show");
+}
+
+function escapeQuotes(text) {
+    return text.replace(/'/g, "\\'");
+}
+
+renderCategories();
+renderProducts();
+updateCartCount();
+</script>
+
+</body>
+</html>
